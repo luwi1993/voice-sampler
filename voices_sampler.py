@@ -26,15 +26,18 @@ class VoiceSampler:
         status = sd.wait()
         return status
 
-    def check_successful(self):
-        _input = input("ok? [y/n]").lower()
+    def check_successful(self, path):
+        _input = input("ok? [y/n] p for replay").lower()
 
         success = True
         if _input == "n":
             success = False
+        elif _input == "p":
+            self.play(path)
+            self.check_successful(path)
         elif _input != "y":
             print("invalid entry")
-            success = self.check_successful()
+            success = self.check_successful(path)
         return success
 
     def check_repeat(self, transcription):
@@ -50,7 +53,7 @@ class VoiceSampler:
 
     def check_finished(self, path, transcription):
         self.play(path)
-        success = self.check_successful()
+        success = self.check_successful(path)
         finished = True
         if not success:
             os.remove(path)
