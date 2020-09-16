@@ -16,6 +16,7 @@ class VoiceSampler:
         self.transctripts = []
 
     def go_signal(self):
+        input("press enter when ready")
         ui.play(self.go_signal_path)
 
     def record(self, path):
@@ -28,7 +29,7 @@ class VoiceSampler:
 
     def save_tramscript(self, path):
         df = pd.DataFrame(np.asarray(self.transctripts), columns=["id", "transcription", "normalized_transcription"])
-        df.to_csv(path, sep="\t")
+        df.to_csv(path, sep="|")
 
     def sample(self, transcription=""):
         id = str(time.time())
@@ -40,12 +41,14 @@ class VoiceSampler:
             self.make_transcript_entry(id=id, transcription=transcription, normalized_transcription=transcription)
 
     def make_dataset(self, transcriptions):
-        id = str(time.time())
-        for transcription in transcriptions:
-            self.sample(transcription)
-        self.save_tramscript(self.file_path + "transcriptions/transcriptions_" + id + ".csv")
+        try:
+            id = str(time.time())
+            for transcription in transcriptions:
+                self.sample(transcription)
+            self.save_tramscript(self.file_path + "transcriptions/transcriptions_" + id + ".csv")
+        except:
+            self.save_tramscript(self.file_path + "transcriptions/transcriptions_" + id + ".csv")
 
-
-transcription = ["A", "B", "C"]
-v = VoiceSampler(seconds=1)
+transcription = pd.read_csv("files/metadata.csv", sep="|").values[:,1].tolist()[:10]
+v = VoiceSampler(seconds=3)
 v.make_dataset(transcription)

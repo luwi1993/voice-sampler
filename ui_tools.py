@@ -49,5 +49,4 @@ def check_finished(path, transcription, func):
 
 def show_transcription(transcription, go_signal):
     print(transcription)
-    time.sleep(1)
     go_signal()
