@@ -2,12 +2,13 @@ import matplotlib.pyplot as plt
 import numpy as np
 import librosa
 from scipy.io.wavfile import write
-from ui_tools import play
-
 
 class VoicePreprocessor:
-    def __init__(self, fs=22050):
-        self.fs = fs
+    def __init__(self):
+        self.samples = []
+        self.sample_rate = 0
+        self.duration = 0
+        self.n_samples = 0
 
     def load(self, path):
         self.samples, self.sample_rate = librosa.load(path)
