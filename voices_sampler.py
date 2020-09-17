@@ -33,6 +33,7 @@ class VoiceSampler:
             if os.path.isfile(path):
                 old_transcripts = pd.read_csv(path, sep=sep)
                 df = old_transcripts.append(df)
+            print(str(len(df))+" entrys saved total")
             df.to_csv(path, sep=sep, index=False)
             self.transctripts = []
 
@@ -49,7 +50,7 @@ class VoiceSampler:
         N = len(transcriptions)
         transcript_path = self.file_path + "transcriptions/transcriptions.csv"
         for _ in range(n_samples):
-            transcription = np.random.randint(0,N)
+            transcription = transcriptions[np.random.randint(0,N)]
             self.sample(transcription)
             self.save_transcript(transcript_path)
 
