@@ -39,7 +39,9 @@ class VoicePreprocessor:
     def write(self, path):
         write(path, self.sample_rate, self.samples)
 
-    def preprocess_voice(self, path):
+    def preprocess_voice(self, path, goal_path=None):
+        if goal_path == None:
+            goal_path = path
         self.load(path)
         self.filter()
-        self.write(path)
+        self.write(goal_path)
