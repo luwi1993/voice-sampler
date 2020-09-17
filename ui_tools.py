@@ -48,5 +48,7 @@ def check_finished(path, transcription, func):
     return finished, success
 
 def show_transcription(transcription, go_signal):
+    print("---"*3+"read this"+"---"*3)
     print(transcription)
+    print("---"*9)
     go_signal()
