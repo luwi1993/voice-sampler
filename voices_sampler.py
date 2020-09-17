@@ -48,12 +48,17 @@ class VoiceSampler:
         finished, success = ui.check_finished(path, transcription, self.sample)
         if success:
             self.make_transcript_entry(id=id, transcription=transcription, normalized_transcription=transcription)
+    def sample_transcription(self, transcriptions_batch, max_len = 100):
+        N = len(transcriptions_batch)
+        transcription = transcriptions_batch[np.random.randint(0,N)]
+        if len(transcription) > max_len:
+            transcription = self.sample_transcription(transcriptions_batch)
+        return transcription
 
-    def make_dataset(self, transcriptions, n_samples=10):
-        N = len(transcriptions)
+    def make_dataset(self, transcriptions_batch, n_samples=10):
         transcript_path = self.file_path + "transcriptions/transcriptions.csv"
         for _ in range(n_samples):
-            transcription = transcriptions[np.random.randint(0,N)]
+            transcription = self.sample_transcription(transcriptions_batch)
             self.sample(transcription)
             self.save_transcript(transcript_path)
 
