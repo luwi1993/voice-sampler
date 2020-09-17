@@ -54,6 +54,7 @@ class VoiceSampler:
             self.sample(transcription)
             self.save_transcript(transcript_path)
 
-transcription = pd.read_csv("files/metadata.csv", sep="|").values[:,1].tolist()[:30]
-v = VoiceSampler(seconds=10)
-v.make_dataset(transcription)
+if __name__ == "__main__":
+    transcription = pd.read_csv("files/metadata.csv", sep="|").values[:,1].tolist()[:30]
+    v = VoiceSampler(seconds=10)
+    v.make_dataset(transcription)
