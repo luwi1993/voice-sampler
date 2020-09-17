@@ -55,7 +55,7 @@ class VoiceSampler:
             transcription = self.sample_transcription(transcriptions_batch)
         return transcription
 
-    def make_dataset(self, transcriptions_batch, n_samples=10):
+    def produce_dataset(self, transcriptions_batch, n_samples=10):
         transcript_path = self.file_path + "transcriptions/transcriptions.csv"
         for _ in range(n_samples):
             transcription = self.sample_transcription(transcriptions_batch)
@@ -64,5 +64,5 @@ class VoiceSampler:
 
 if __name__ == "__main__":
     transcription = pd.read_csv("files/metadata.csv", sep="|").values[:,1].tolist()[:10000]
-    v = VoiceSampler(seconds=10)
-    v.make_dataset(transcription)
+    VoiceSampler(seconds=10).produce_dataset(transcription)
+
