@@ -47,8 +47,7 @@ class VoiceSampler:
 
     def make_dataset(self, transcriptions, n_samples=10):
         N = len(transcriptions)
-        id = str(time.time())
-        transcript_path = self.file_path + "transcriptions/transcriptions_.csv" #" + id + "
+        transcript_path = self.file_path + "transcriptions/transcriptions.csv"
         for _ in range(n_samples):
             transcription = np.random.randint(0,N)
             self.sample(transcription)
