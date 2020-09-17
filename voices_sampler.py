@@ -4,10 +4,10 @@ import ui_tools as ui
 import time
 import numpy as np
 import pandas as pd
-
+import os
 
 class VoiceSampler:
-    def __init__(self, fs=44100, seconds=3, file_path="files/", go_signal_path="go.wav", device='digital output'):
+    def __init__(self, fs=22050, seconds=3, file_path="files/", go_signal_path="go.wav", device='digital output'):
         self.fs = fs
         self.seconds = seconds
         self.file_path = file_path
@@ -27,9 +27,14 @@ class VoiceSampler:
     def make_transcript_entry(self, id=0, transcription="", normalized_transcription=""):
         self.transctripts.append([id, transcription, normalized_transcription])
 
-    def save_tramscript(self, path):
-        df = pd.DataFrame(np.asarray(self.transctripts), columns=["id", "transcription", "normalized_transcription"])
-        df.to_csv(path, sep="|")
+    def save_transcript(self, path, sep ="|"):
+        if self.transctripts:
+            df = pd.DataFrame(np.asarray(self.transctripts), columns=["id", "transcription", "normalized_transcription"])
+            if os.path.isfile(path):
+                old_transcripts = pd.read_csv(path, sep=sep)
+                df = old_transcripts.append(df)
+            df.to_csv(path, sep=sep, index=False)
+            self.transctripts = []
 
     def sample(self, transcription=""):
         id = str(time.time())
@@ -40,15 +45,15 @@ class VoiceSampler:
         if success:
             self.make_transcript_entry(id=id, transcription=transcription, normalized_transcription=transcription)
 
-    def make_dataset(self, transcriptions):
-        try:
-            id = str(time.time())
-            for transcription in transcriptions:
-                self.sample(transcription)
-            self.save_tramscript(self.file_path + "transcriptions/transcriptions_" + id + ".csv")
-        except:
-            self.save_tramscript(self.file_path + "transcriptions/transcriptions_" + id + ".csv")
+    def make_dataset(self, transcriptions, n_samples=10):
+        N = len(transcriptions)
+        id = str(time.time())
+        transcript_path = self.file_path + "transcriptions/transcriptions_.csv" #" + id + "
+        for _ in range(n_samples):
+            transcription = np.random.randint(0,N)
+            self.sample(transcription)
+            self.save_transcript(transcript_path)
 
-transcription = pd.read_csv("files/metadata.csv", sep="|").values[:,1].tolist()[:10]
-v = VoiceSampler(seconds=3)
+transcription = pd.read_csv("files/metadata.csv", sep="|").values[:,1].tolist()[:30]
+v = VoiceSampler(seconds=10)
 v.make_dataset(transcription)
