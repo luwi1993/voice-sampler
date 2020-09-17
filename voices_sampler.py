@@ -39,13 +39,13 @@ class VoiceSampler:
             df.to_csv(path, sep=sep, index=False)
             self.transctripts = []
 
-    def sample(self, transcription=""):
+    def make_dataset_entry(self, transcription=""):
         id = str(time.time())
         ui.show_transcription(transcription, self.go_signal)
         path = self.file_path + "samples/" + id + ".wav"
         self.record(path)
         self.voice_preprocessor.preprocess_voice(path)
-        finished, success = ui.check_finished(path, transcription, self.sample)
+        finished, success = ui.check_finished(path, transcription, self.make_dataset_entry)
         if success:
             self.make_transcript_entry(id=id, transcription=transcription, normalized_transcription=transcription)
     def sample_transcription(self, transcriptions_batch, max_len = 100):
@@ -59,7 +59,7 @@ class VoiceSampler:
         transcript_path = self.file_path + "transcriptions/transcriptions.csv"
         for _ in range(n_samples):
             transcription = self.sample_transcription(transcriptions_batch)
-            self.sample(transcription)
+            self.make_dataset_entry(transcription)
             self.save_transcript(transcript_path)
 
 if __name__ == "__main__":
