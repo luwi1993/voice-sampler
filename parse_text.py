@@ -64,7 +64,7 @@ class TextParser:
     def find_valid(self, path = "files/samples/"):
         valid = []
         for i,name in enumerate(self.all_filenames):
-            if os.path.isfile(path+name):
+            if os.path.isfile(path+str(name)+".wav"):
                 valid.append(i)
         return valid
 
@@ -114,7 +114,7 @@ class TextParser:
 
     def get_all_inside_quotes(self, wav_dir="files/samples/"):
         n_files = len(os.listdir(wav_dir))
-        self.all_inside_quotes = [self.get_inside_quotes() for _ in range(n_files)]
+        self.all_inside_quotes = [self.get_inside_quotes("") for _ in range(n_files)]
 
     def get_transctripts_df(self):
         transctripts = np.asarray([[a, b, c, d, e] for a, b, c, d, e in
@@ -139,3 +139,4 @@ class TextParser:
         self.filter_valid()
         self.safe_transctripts()
 
+t = TextParser().preprocess()

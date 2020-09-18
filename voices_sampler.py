@@ -29,7 +29,7 @@ class VoiceSampler:
         write(path, self.fs, recording)
 
     def make_transcript_entry(self, id=0, transcription="", normalized_transcription="", is_inside_quote=False, duration=0):
-        self.transctript.append([id, transcription, normalized_transcription])
+        self.transctript.append([id, transcription, normalized_transcription, is_inside_quote, duration])
 
     def save_transcript(self, path, sep ="|"):
         if self.transctript:
@@ -47,7 +47,8 @@ class VoiceSampler:
         ui.show_transcription(normalized_transcription, self.go_signal)
         path = self.file_path + "samples/" + id + ".wav"
 
-        repeat = False
+        success = False
+        repeat = True
         while repeat:
             self.record(path)
             self.voice_preprocessor.preprocess_voice(path)
