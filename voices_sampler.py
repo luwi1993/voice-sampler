@@ -60,9 +60,7 @@ class VoiceSampler:
             finished, success, repeat = ui.check_finished(path)
 
         if success:
-            print("entry", self.transctript)
             self.make_transcript_entry(id=id, transcription=transcription, normalized_transcription=normalized_transcription,is_inside_quote=is_inside_quotes , duration=duration)
-            print("entry", self.transctript)
         else:
             os.remove(path)
 
