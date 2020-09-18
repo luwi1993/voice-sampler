@@ -3,7 +3,7 @@ import os
 import librosa
 import numpy as np
 import pandas as pd
-
+import ui_tools as ui
 
 class TextParser:
     def __init__(self, mode=""):
@@ -61,15 +61,16 @@ class TextParser:
             word = full
         return word
 
-    def find_valid(self, path = "files/samples/"):
+    def find_valid_transcription(self, path ="files/samples/"):
         valid = []
         for i,name in enumerate(self.all_filenames):
-            if os.path.isfile(path+str(name)+".wav"):
+            if os.path.isfile(path+str(name)):
                 valid.append(i)
         return valid
 
-    def filter_valid(self):
-        valids = self.find_valid()
+    def filter_valid_transcription(self):
+        valids = self.find_valid_transcription()
+        print(len(valids),"of",len(self.all_filenames),"transcriptions are valid")
         self.all_filenames = np.asarray(self.all_filenames)[valids].tolist()
         self.all_transcriptions = np.asarray(self.all_transcriptions)[valids].tolist()
         self.all_prep_transcriptions = np.asarray(self.all_prep_transcriptions)[valids].tolist()
@@ -93,12 +94,11 @@ class TextParser:
             prep_text.append(self.parse_transcription(transcription))
         self.all_prep_transcriptions = prep_text
 
-    def load_file(self, path="files/transcriptions/transcriptions.csv"):
+    def load_file(self, path="files/transcriptions/transcript.csv"):
         df = pd.read_csv(path, sep="|")
         vals = df.values
         self.all_filenames = vals[:, 0]
         self.all_transcriptions = vals[:, 1]
-        self.all_prep_transcriptions = vals[:, 2]
         self.n_entrys = len(df)
 
 
@@ -130,11 +130,37 @@ class TextParser:
     def print(self):
         self.get_transctripts_df().head(10)
 
-    def cleanup_transcript(self, source="files/transcriptions/transcriptions.csv", file="files/transcriptions/transcript.csv"):
+    def cleanup_transcript(self, source="files/transcriptions/transcriptions.csv", file="files/transcriptions/transcript_clean.csv"):
         self.load_file(source)
         self.edit_text()
         self.get_all_durations()
         self.get_all_inside_quotes()
         self.prep_all_transcriptions()
-        self.filter_valid()
+        self.filter_valid_transcription()
+        self.filter_valid_wav()
         self.safe_transctripts(file)
+
+    def find_valid_wav(self, wav_dir="files/samples/"):
+        valids = []
+        invalids = []
+        file_names = os.listdir(wav_dir)
+        if self.all_filenames:
+            for file in file_names:
+                if not file in self.all_filenames:
+                    invalids.append(file)
+                else:
+                    valids.append(file)
+        return valids, invalids
+
+
+    def filter_valid_wav(self,wav_dir="files/samples/"):
+        valinds, invalids = self.find_valid_wav(wav_dir)
+        print(len(valinds),"of",(len(valinds)+len(invalids)),"files are valid")
+        print("invalids:",invalids)
+        if ui.check_remove():
+            for file in invalids:
+                os.remove(wav_dir+file)
+
+
+t= TextParser()
+t.cleanup_transcript()

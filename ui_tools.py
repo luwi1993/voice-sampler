@@ -8,18 +8,28 @@ def play(path):
     status = sd.wait()
     return status
 
-def check_successful(path):
-    _input = input("ok? [y/n] p for replay").lower()
+def check_remove():
+    _input = input("remove? [y/n]").lower()
+    if _input == "y":
+        remove = True
+    elif _input == "n":
+        remove = False
+    else:
+        print("invalid entry")
+        remove = check_remove()
+    return remove
 
+def check_successfull(path):
+    _input = input("ok? [y/n] p for replay").lower()
     success = True
     if _input == "n":
         success = False
     elif _input == "p":
         play(path)
-        success = check_successful(path)
+        success = check_successfull(path)
     elif _input != "y":
         print("invalid entry")
-        success = check_successful(path)
+        success = check_successfull(path)
     return success
 
 def check_repeat():
@@ -30,12 +40,12 @@ def check_repeat():
         repeat = False
     else:
         print("invalid entry")
-        check_repeat()
+        repeat = check_repeat()
     return repeat
 
 def check_finished(path):
     play(path)
-    success = check_successful(path)
+    success = check_successfull(path)
     finished = True
     repeat = False
     if not success:
