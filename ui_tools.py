@@ -34,18 +34,20 @@ def check_repeat(transcription):
         check_repeat(transcription)
     return repeat
 
-def check_finished(path, transcription, func):
+def check_finished(path, transcription):
     play(path)
     success = check_successful(path)
     finished = True
+    repeat = False
     if not success:
         os.remove(path)
         repeat = check_repeat(transcription)
         if repeat:
-            finished = func(transcription)
+            finished = False
+            repeat = True
         else:
             finished = True
-    return finished, success
+    return finished, success, repeat
 
 def show_transcription(transcription, go_signal):
     print("---"*3+"read this"+"---"*3)

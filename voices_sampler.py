@@ -14,7 +14,7 @@ class VoiceSampler:
         self.file_path = file_path
         self.go_signal_path = file_path + go_signal_path
         self.device = device
-        self.transctripts = []
+        self.transctript = []
         self.voice_preprocessor = VoicePreprocessor()
 
     def go_signal(self):
@@ -26,28 +26,32 @@ class VoiceSampler:
         sd.wait()
         write(path, self.fs, recording)
 
-    def make_transcript_entry(self, id=0, transcription="", normalized_transcription=""):
-        self.transctripts.append([id, transcription, normalized_transcription])
+    def make_transcript_entry(self, id=0, transcription="", normalized_transcription="", is_inside_quote=False, duration=0):
+        self.transctript.append([id, transcription, normalized_transcription])
 
     def save_transcript(self, path, sep ="|"):
-        if self.transctripts:
-            df = pd.DataFrame(np.asarray(self.transctripts), columns=["id", "transcription", "normalized_transcription"])
+        if self.transctript:
+            df = pd.DataFrame(np.asarray(self.transctript), columns=["id", "transcription", "normalized_transcription", "is_inside_quote", "duration"])
             if os.path.isfile(path):
                 old_transcripts = pd.read_csv(path, sep=sep)
                 df = old_transcripts.append(df)
             print(str(len(df))+" entrys saved total")
             df.to_csv(path, sep=sep, index=False)
-            self.transctripts = []
+            self.transctript = []
 
     def make_dataset_entry(self, transcription=""):
         id = str(time.time())
         ui.show_transcription(transcription, self.go_signal)
         path = self.file_path + "samples/" + id + ".wav"
-        self.record(path)
-        self.voice_preprocessor.preprocess_voice(path)
-        finished, success = ui.check_finished(path, transcription, self.make_dataset_entry)
+
+        repeat = False
+        while repeat:
+            self.record(path)
+            self.voice_preprocessor.preprocess_voice(path)
+            finished, success, repeat = ui.check_finished(path, transcription)
+
         if success:
-            self.make_transcript_entry(id=id, transcription=transcription, normalized_transcription=transcription)
+            self.make_transcript_entry(id=id, transcription=transcription, normalized_transcription=transcription,is_inside_quote= , duration= )
 
     def sample_transcription(self, transcriptions_batch, max_len = 100):
         N = len(transcriptions_batch)
@@ -57,7 +61,7 @@ class VoiceSampler:
         return transcription
 
     def produce_dataset(self, transcriptions_batch, n_samples=10):
-        transcript_path = self.file_path + "transcriptions/transcriptions.csv"
+        transcript_path = self.file_path + "transcriptions/transcript.csv"
         for _ in range(n_samples):
             transcription = self.sample_transcription(transcriptions_batch)
             self.make_dataset_entry(transcription)
