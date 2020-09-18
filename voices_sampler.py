@@ -6,6 +6,7 @@ import numpy as np
 import pandas as pd
 import os
 from preprocess import VoicePreprocessor
+from parse_text import TextParser
 
 class VoiceSampler:
     def __init__(self, fs=22050, seconds=3, file_path="files/", go_signal_path="go.wav", device='digital output'):
@@ -16,6 +17,7 @@ class VoiceSampler:
         self.device = device
         self.transctript = []
         self.voice_preprocessor = VoicePreprocessor()
+        self.text_parser = TextParser()
 
     def go_signal(self):
         input("press enter when ready")
@@ -39,7 +41,7 @@ class VoiceSampler:
             df.to_csv(path, sep=sep, index=False)
             self.transctript = []
 
-    def make_dataset_entry(self, transcription=""):
+    def produce_dataset_entry(self, transcription=""):
         id = str(time.time())
         ui.show_transcription(transcription, self.go_signal)
         path = self.file_path + "samples/" + id + ".wav"
@@ -48,10 +50,12 @@ class VoiceSampler:
         while repeat:
             self.record(path)
             self.voice_preprocessor.preprocess_voice(path)
+            is_inside_quotes = self.text_parser.get_inside_quotes(transcription)
+            duration = self.text_parser.get_duration(path)
             finished, success, repeat = ui.check_finished(path, transcription)
 
         if success:
-            self.make_transcript_entry(id=id, transcription=transcription, normalized_transcription=transcription,is_inside_quote= , duration= )
+            self.make_transcript_entry(id=id, transcription=transcription, normalized_transcription=transcription,is_inside_quote=is_inside_quotes , duration=duration)
 
     def sample_transcription(self, transcriptions_batch, max_len = 100):
         N = len(transcriptions_batch)
@@ -64,7 +68,7 @@ class VoiceSampler:
         transcript_path = self.file_path + "transcriptions/transcript.csv"
         for _ in range(n_samples):
             transcription = self.sample_transcription(transcriptions_batch)
-            self.make_dataset_entry(transcription)
+            self.produce_dataset_entry(transcription)
             self.save_transcript(transcript_path)
 
 if __name__ == "__main__":

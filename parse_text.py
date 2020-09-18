@@ -52,7 +52,7 @@ class TextParser:
         samples, sample_rate = librosa.load(path)
         return librosa.get_duration(samples, sample_rate)
 
-    def get_inside_quotes(self):
+    def get_inside_quotes(self, transcription):
         return False
 
 
