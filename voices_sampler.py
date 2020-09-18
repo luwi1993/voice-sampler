@@ -36,9 +36,12 @@ class VoiceSampler:
             df = pd.DataFrame(np.asarray(self.transctript), columns=["id", "transcription", "normalized_transcription", "is_inside_quote", "duration"])
             if os.path.isfile(path):
                 old_transcripts = pd.read_csv(path, sep=sep)
-                df = old_transcripts.append(df)
+                vals = np.vstack((old_transcripts.values, df.values))
+                df = pd.DataFrame(np.asarray(vals),
+                                  columns=["id", "transcription", "normalized_transcription", "is_inside_quote",
+                                           "duration"])
             print(str(len(df))+" entrys saved total")
-            df.to_csv(path, sep=sep, index=False)
+            df.to_csv(path, sep="|",index=False,header=False)
             self.transctript = []
 
     def produce_dataset_entry(self, transcription=""):
@@ -57,7 +60,11 @@ class VoiceSampler:
             finished, success, repeat = ui.check_finished(path)
 
         if success:
+            print("entry", self.transctript)
             self.make_transcript_entry(id=id, transcription=transcription, normalized_transcription=normalized_transcription,is_inside_quote=is_inside_quotes , duration=duration)
+            print("entry", self.transctript)
+        else:
+            os.remove(path)
 
     def sample_transcription(self, transcriptions_batch, max_len = 100):
         N = len(transcriptions_batch)

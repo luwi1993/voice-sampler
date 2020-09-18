@@ -130,13 +130,11 @@ class TextParser:
     def print(self):
         self.get_transctripts_df().head(10)
 
-    def preprocess(self):
-        self.load_file()
-       # self.edit_text()
+    def cleanup_transcript(self, source="files/transcriptions/transcriptions.csv", file="files/transcriptions/transcript.csv"):
+        self.load_file(source)
+        self.edit_text()
         self.get_all_durations()
         self.get_all_inside_quotes()
         self.prep_all_transcriptions()
         self.filter_valid()
-        self.safe_transctripts()
-
-t = TextParser().preprocess()
+        self.safe_transctripts(file)

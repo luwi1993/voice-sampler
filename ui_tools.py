@@ -1,7 +1,6 @@
 import sounddevice as sd
 import soundfile as sf
-import time
-import os
+
 
 def play(path):
     data, fs = sf.read(path)
@@ -40,7 +39,6 @@ def check_finished(path):
     finished = True
     repeat = False
     if not success:
-        os.remove(path)
         repeat = check_repeat()
         if repeat:
             finished = False
