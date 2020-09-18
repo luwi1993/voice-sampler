@@ -43,7 +43,8 @@ class VoiceSampler:
 
     def produce_dataset_entry(self, transcription=""):
         id = str(time.time())
-        ui.show_transcription(transcription, self.go_signal)
+        normalized_transcription = self.text_parser.parse_transcription(transcription)
+        ui.show_transcription(normalized_transcription, self.go_signal)
         path = self.file_path + "samples/" + id + ".wav"
 
         repeat = False
@@ -55,7 +56,7 @@ class VoiceSampler:
             finished, success, repeat = ui.check_finished(path)
 
         if success:
-            self.make_transcript_entry(id=id, transcription=transcription, normalized_transcription=transcription,is_inside_quote=is_inside_quotes , duration=duration)
+            self.make_transcript_entry(id=id, transcription=transcription, normalized_transcription=normalized_transcription,is_inside_quote=is_inside_quotes , duration=duration)
 
     def sample_transcription(self, transcriptions_batch, max_len = 100):
         N = len(transcriptions_batch)

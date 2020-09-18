@@ -35,7 +35,7 @@ class TextParser:
                              ("Ft.", "Fort")]
         self.deletions = ['"',":",";",",",")","(","5","1","2","3","4","6","7","8","9","0","-",""]
 
-    def prep_transcription(self, transcription):
+    def parse_transcription(self, transcription):
         prep_transcription = ""
         for word in transcription.split(" "):
             for abb, full in self.replacements:
@@ -90,7 +90,7 @@ class TextParser:
     def prep_all_transcriptions(self):
         prep_text = []
         for transcription in self.all_transcriptions:
-            prep_text.append(self.prep_transcription(transcription))
+            prep_text.append(self.parse_transcription(transcription))
         self.all_prep_transcriptions = prep_text
 
     def load_file(self, path="files/transcriptions/transcriptions.csv"):
@@ -132,7 +132,7 @@ class TextParser:
 
     def preprocess(self):
         self.load_file()
-        self.edit_text()
+       # self.edit_text()
         self.get_all_durations()
         self.get_all_inside_quotes()
         self.prep_all_transcriptions()
