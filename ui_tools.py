@@ -23,7 +23,7 @@ def check_successful(path):
         success = check_successful(path)
     return success
 
-def check_repeat(transcription):
+def check_repeat():
     _input = input("repeat? [y/n]").lower()
     if _input == "y":
         repeat = True
@@ -31,17 +31,17 @@ def check_repeat(transcription):
         repeat = False
     else:
         print("invalid entry")
-        check_repeat(transcription)
+        check_repeat()
     return repeat
 
-def check_finished(path, transcription):
+def check_finished(path):
     play(path)
     success = check_successful(path)
     finished = True
     repeat = False
     if not success:
         os.remove(path)
-        repeat = check_repeat(transcription)
+        repeat = check_repeat()
         if repeat:
             finished = False
             repeat = True

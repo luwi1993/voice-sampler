@@ -52,7 +52,7 @@ class VoiceSampler:
             self.voice_preprocessor.preprocess_voice(path)
             is_inside_quotes = self.text_parser.get_inside_quotes(transcription)
             duration = self.text_parser.get_duration(path)
-            finished, success, repeat = ui.check_finished(path, transcription)
+            finished, success, repeat = ui.check_finished(path)
 
         if success:
             self.make_transcript_entry(id=id, transcription=transcription, normalized_transcription=transcription,is_inside_quote=is_inside_quotes , duration=duration)
