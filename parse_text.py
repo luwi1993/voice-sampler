@@ -33,7 +33,7 @@ class TextParser:
                              ("Ltd.", "Limited"),
                              ("Col.", "Colonel"),
                              ("Ft.", "Fort")]
-        self.deletions = ['"',":",";",",",")","(","5","1","2","3","4","6","7","8","9","0"]
+        self.deletions = ['"',":",";",",",")","(","5","1","2","3","4","6","7","8","9","0","-",""]
 
     def replace_abbreviation(self, word, abb, full):
         if word == abb:
@@ -69,12 +69,13 @@ class TextParser:
         for line in self.text:
             prep_line = ""
             for word in line.split(" "):
+                for abb, full in self.replacements:
+                    word = self.replace_abbreviation(word, abb, full)
+                prep_word = ""
                 for char in word:
-                    prep_word = ""
                     if not char in self.deletions:
                         prep_word += char.lower()
-                for abb, full in self.replacements:
-                    prep_word = self.replace_abbreviation(prep_word, abb, full)
+
                 prep_line += prep_word + " "
             prep_text.append(prep_line[:-1])
         self.prep_text = prep_text
