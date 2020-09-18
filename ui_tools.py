@@ -39,11 +39,11 @@ def check_finished(path, transcription, func):
     success = check_successful(path)
     finished = True
     if not success:
-        os.remove(path)
         repeat = check_repeat(transcription)
         if repeat:
             finished = func(transcription)
         else:
+            os.remove(path)
             finished = True
     return finished, success
 

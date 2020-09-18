@@ -10,7 +10,7 @@ class TextParser:
         self.mode = mode
         self.inside_quotes = []
         self.durations = []
-        self.name = []
+        self.names = []
         self.text = []
         self.prep_text = []
         self.n_entrys = 0
@@ -40,6 +40,30 @@ class TextParser:
             word = full
         return word
 
+    def find_valid(self, path = "files/samples/"):
+        valid = []
+        for i,name in enumerate(self.names):
+            if os.path.isfile(path+name):
+                valid.append(i)
+        return valid
+
+    def filter_valid(self):
+        valids = self.find_valid()
+        self.names = np.asarray(self.names)[valids].tolist()
+        self.text = np.asarray(self.text)[valids].tolist()
+        self.prep_text = np.asarray(self.prep_text)[valids].tolist()
+        self.inside_quotes = np.asarray(self.inside_quotes)[valids].tolist()
+        self.durations = np.asarray(self.durations)[valids].tolist()
+
+    def edit_text(self, path="files/transcriptions/transcriptions.csv"):
+        names = []
+        for name in self.names:
+            name=str(name)
+            if name[:-4] != ".wav":
+                name+=".wav"
+            names.append(name)
+        self.names = names
+
     def get_prep_text(self):
         prep_text = []
         for line in self.text:
@@ -58,7 +82,7 @@ class TextParser:
     def load_file(self, path="files/transcriptions/transcriptions.csv"):
         df = pd.read_csv(path, sep="|")
         vals = df.values
-        self.name = vals[:, 0]
+        self.names = vals[:, 0]
         self.text = vals[:, 1]
         self.prep_text = vals[:, 2]
         self.n_entrys = len(df)
@@ -77,7 +101,7 @@ class TextParser:
 
     def get_transctripts(self):
         transctripts = np.asarray([[a, b, c, d, e] for a, b, c, d, e in
-                                   zip(self.name, self.text, self.prep_text, self.inside_quotes, self.durations)])
+                                   zip(self.names, self.text, self.prep_text, self.inside_quotes, self.durations)])
         df = pd.DataFrame(transctripts,
                           columns=["id", "transcription", "normalized_transcription", "is_inside_quote", "duration"],)
         return df
@@ -91,9 +115,11 @@ class TextParser:
 
     def preprocess(self):
         self.load_file()
+        self.edit_text()
         self.get_duration()
         self.get_inside_quotes()
         self.get_prep_text()
+        self.filter_valid()
         self.safe_transctripts()
 
 TextParser().preprocess()

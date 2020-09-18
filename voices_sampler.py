@@ -48,6 +48,7 @@ class VoiceSampler:
         finished, success = ui.check_finished(path, transcription, self.make_dataset_entry)
         if success:
             self.make_transcript_entry(id=id, transcription=transcription, normalized_transcription=transcription)
+
     def sample_transcription(self, transcriptions_batch, max_len = 100):
         N = len(transcriptions_batch)
         transcription = transcriptions_batch[np.random.randint(0,N)]
